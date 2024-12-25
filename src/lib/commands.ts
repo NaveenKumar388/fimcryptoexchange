@@ -1,8 +1,8 @@
 import { Context } from "grammy";
 import { createClient } from "@supabase/supabase-js";
 import { ADMIN_PASSWORD, AVAILABLE_CURRENCIES, NETWORK_FEES, FIXED_DOLLAR_VALUE, ENHANCE_FEE_PER_DOLLAR, USDT_FIXED_DOLLAR_VALUE } from "./constants";
-import { getBinanceTicker, createBinanceWithdrawal } from "src/lib/binanceApi";
-import type { UserState } from "src/lib/types";
+import { getBinanceTicker, createBinanceWithdrawal } from "@/lib/binanceApi";
+import type { UserState } from "@/lib/types";
 
 const supabase = createClient(
   process.env.SUPABASE_URL || "",
