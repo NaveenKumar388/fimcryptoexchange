@@ -2,9 +2,9 @@ import { Elysia } from 'elysia';
 import { Bot, webhookCallback } from 'grammy';
 import { Redis } from 'ioredis';
 import { Pool } from 'pg';
-import { conversations } from '@grammyjs/conversations';
+import { conversations, createConversation } from '@grammyjs/conversations';
 import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from './lib/commands';
-import type { UserState } from './types';
+import type { Context } from './types';
 
 // Initialize Redis client
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
@@ -15,15 +15,19 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-const bot = new Bot<UserState>(process.env.TELEGRAM_BOT_TOKEN || '');
+const bot = new Bot<Context>(process.env.TELEGRAM_BOT_TOKEN || '');
 
 // Configure bot
 bot.use(conversations());
+bot.use(createConversation(handleRegister));
+bot.use(createConversation(handleExchange));
+bot.use(createConversation(handleAdmin));
+
 bot.command('start', handleStart);
 bot.command('help', handleHelp);
-bot.command('register', handleRegister);
-bot.command('exchange', handleExchange);
-bot.command('admin', handleAdmin);
+bot.command('register', (ctx) => ctx.conversation.enter('handleRegister'));
+bot.command('exchange', (ctx) => ctx.conversation.enter('handleExchange'));
+bot.command('admin', (ctx) => ctx.conversation.enter('handleAdmin'));
 
 // Error handling
 bot.catch((err) => {
