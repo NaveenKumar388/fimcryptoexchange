@@ -3,7 +3,7 @@ import { Bot, webhookCallback } from 'grammy';
 import { conversations } from '@grammyjs/conversations';
 import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from './lib/commands';
 import { testConnections, initializeDatabase } from './lib/db';
-import type { UserState } from './lib/types';
+import type { UserState } from './types';
 
 
 async function startServer() {
