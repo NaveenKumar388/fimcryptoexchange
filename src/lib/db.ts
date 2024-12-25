@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import type { Pool } from 'pg';
 import { Redis } from 'ioredis';
 
 // Parse Redis URL (Render provides a full URL)
@@ -16,7 +16,7 @@ function parseRedisUrl(url: string) {
 }
 
 // PostgreSQL configuration
-export const pgPool = new Pool({
+export const pgPool: Pool = new (require('pg').Pool)({
   connectionString: process.env.INTERNAL_POSTGRES_URL || process.env.POSTGRES_URL,
   ssl: {
     rejectUnauthorized: false // Required for Render PostgreSQL
@@ -92,3 +92,4 @@ export async function initializeDatabase() {
     client.release();
   }
 }
+
