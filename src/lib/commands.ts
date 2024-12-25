@@ -1,14 +1,18 @@
-import { Context, Conversation } from "grammy";
+import { Context } from "grammy";
+import { Conversation, ConversationFlavor } from "@grammyjs/conversations";
 import { ADMIN_PASSWORD, AVAILABLE_CURRENCIES, NETWORK_FEES, FIXED_DOLLAR_VALUE, ENHANCE_FEE_PER_DOLLAR, USDT_FIXED_DOLLAR_VALUE } from "../constants";
 import { getBinanceTicker, createBinanceWithdrawal } from "./binanceApi";
 import { storeUserData, storeTransactionData, updateTransactionStatus } from "./database";
-import type { UserState } from "../types";
+import type { SessionData } from "../types";
 
-export async function handleStart(ctx: Context) {
+type MyContext = Context & ConversationFlavor & { session: SessionData };
+type MyConversation = Conversation<MyContext>;
+
+export async function handleStart(ctx: MyContext) {
   await ctx.reply("Welcome to FIM Crypto Exchange! Use /register to start the registration process.");
 }
 
-export async function handleHelp(ctx: Context) {
+export async function handleHelp(ctx: MyContext) {
   await ctx.reply(
     "Available commands:\n" +
     "/start - Start the bot\n" +
@@ -18,7 +22,7 @@ export async function handleHelp(ctx: Context) {
   );
 }
 
-export async function handleRegister(conversation: Conversation<Context>, ctx: Context) {
+export async function handleRegister(conversation: MyConversation, ctx: MyContext) {
   await ctx.reply("Welcome to FIM Crypto Exchange! Please provide your name:");
   const { message } = await conversation.wait();
   ctx.session.name = message?.text || "";
@@ -35,7 +39,7 @@ export async function handleRegister(conversation: Conversation<Context>, ctx: C
   await ctx.reply("Gmail address saved! Registration complete. Use /exchange to start a new exchange.");
 }
 
-export async function handleExchange(conversation: Conversation<Context>, ctx: Context) {
+export async function handleExchange(conversation: MyConversation, ctx: MyContext) {
   await ctx.reply("Choose your crypto currency:", {
     reply_markup: {
       keyboard: AVAILABLE_CURRENCIES.map(currency => [currency]),
@@ -141,7 +145,7 @@ Transaction ID: ${ctx.session.transactionId}
   }
 }
 
-export async function handleAdmin(conversation: Conversation<Context>, ctx: Context) {
+export async function handleAdmin(conversation: MyConversation, ctx: MyContext) {
   await ctx.reply("Enter admin password:");
   const { message: passwordMessage } = await conversation.wait();
 
