@@ -3,8 +3,8 @@ import { Bot, webhookCallback } from 'grammy';
 import { Redis } from 'ioredis';
 import { Pool } from 'pg';
 import { conversations } from '@grammyjs/conversations';
-import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from 'src/lib/commands';
-import type { UserState } from 'src/lib/types';
+import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from './lib/commands';
+import type { UserState } from './lib/types';
 
 // Initialize Redis client
 const redis = new Redis({
