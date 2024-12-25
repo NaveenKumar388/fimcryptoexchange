@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { Context } from "grammy";
+import { Context } from "@/types";
 import { config } from '../config';
 import { getBinanceTicker } from './binanceApi';
 
