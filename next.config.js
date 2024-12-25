@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    serverActions: true,
+    serverActions: true
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -12,6 +12,7 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
+        crypto: false
       };
     }
     return config;
