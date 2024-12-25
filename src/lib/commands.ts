@@ -186,7 +186,7 @@ export async function handleAdmin(conversation: Conversation<Context>, ctx: Cont
   await ctx.reply("Thank you for using the admin panel.");
 }
 
-```typescript file="src/config.ts"
+\`\`\`typescript file="src/config.ts"
 import dotenv from 'dotenv';
 
 dotenv.config();
