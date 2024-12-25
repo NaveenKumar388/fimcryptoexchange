@@ -5,6 +5,7 @@ import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } 
 import { testConnections, initializeDatabase } from './lib/db';
 import type { UserState } from './lib/types';
 
+
 async function startServer() {
   // Test database connections
   const connected = await testConnections();
