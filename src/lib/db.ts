@@ -24,7 +24,7 @@ export const pgPool: Pool = new (require('pg').Pool)({
 });
 
 // Redis configuration
-export const redis = new Redis(process.env.REDIS_URL);
+export const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
 // Test database connections
 export async function testConnections() {
