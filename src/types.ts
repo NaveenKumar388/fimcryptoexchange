@@ -14,7 +14,11 @@ export interface SessionData {
   transactionId: string;
 }
 
+
 export type Context = GrammyContext & SessionFlavor<SessionData> & ConversationFlavor;
+
+export type UserState = Context;
+
 
 export enum BotCommand {
   START = "start",
