@@ -1,4 +1,4 @@
-import { testConnections } from 'src/lib/db';
+import { testConnections } from '../../../lib/db';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
