@@ -4,6 +4,8 @@ import { conversations, createConversation } from '@grammyjs/conversations';
 import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from './lib/commands';
 import { testConnections, initializeDatabase } from './lib/db';
 import type { Context } from './types';
+import { session } from 'grammy';
+import type { SessionData } from './types';
 
 async function startServer() {
   // Test database connections
@@ -19,6 +21,21 @@ async function startServer() {
   const bot = new Bot<Context>(process.env.TELEGRAM_BOT_TOKEN || '');
 
   // Configure bot
+  bot.use(session({
+    initial: (): SessionData => ({
+      step: "",
+      name: "",
+      telegramUsername: "",
+      gmailAddress: "",
+      selectedCurrency: "",
+      selectedNetwork: "",
+      amount: 0,
+      walletAddress: "",
+      memo: "",
+      transactionId: ""
+    })
+  }));
+
   bot.use(conversations());
   bot.use(createConversation(handleRegister));
   bot.use(createConversation(handleExchange));
