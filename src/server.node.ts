@@ -1,9 +1,9 @@
 import express from 'express';
 import { Bot, webhookCallback } from 'grammy';
 import { conversations } from '@grammyjs/conversations';
-import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from './lib/commands';
-import { testConnections, initializeDatabase } from './lib/db';
-import type { UserState } from './lib/types';
+import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from 'src/lib/commands';
+import { testConnections, initializeDatabase } from 'src/lib/db';
+import type { UserState } from 'src/lib/types';
 
 async function startServer() {
   // Test database connections
