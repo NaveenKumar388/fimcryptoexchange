@@ -1,5 +1,5 @@
-const BINANCE_API_KEY = process.env.BINANCE_API_KEY || "";
-const BINANCE_API_SECRET = process.env.BINANCE_API_SECRET || "";
+import { config } from '../config';
+
 const BINANCE_API_URL = "https://api.binance.com";
 
 async function createSignature(message: string, secret: string): Promise<string> {
@@ -31,11 +31,11 @@ export async function getBinanceTicker(symbol: string) {
 export async function convertCrypto(fromSymbol: string, toSymbol: string, amount: number) {
   const timestamp = Date.now();
   const queryString = `fromSymbol=${fromSymbol}&toSymbol=${toSymbol}&amount=${amount}&timestamp=${timestamp}`;
-  const signature = await createSignature(queryString, BINANCE_API_SECRET);
+  const signature = await createSignature(queryString, config.BINANCE_API_SECRET);
 
   const response = await fetch(`${BINANCE_API_URL}/sapi/v1/convert/getQuote?${queryString}&signature=${signature}`, {
     headers: {
-      "X-MBX-APIKEY": BINANCE_API_KEY,
+      "X-MBX-APIKEY": config.BINANCE_API_KEY,
     },
   });
 
@@ -45,12 +45,12 @@ export async function convertCrypto(fromSymbol: string, toSymbol: string, amount
 export async function createBinanceWithdrawal(coin: string, address: string, amount: number, network?: string) {
   const timestamp = Date.now();
   const queryString = `coin=${coin}&address=${address}&amount=${amount}${network ? `&network=${network}` : ''}&timestamp=${timestamp}`;
-  const signature = await createSignature(queryString, BINANCE_API_SECRET);
+  const signature = await createSignature(queryString, config.BINANCE_API_SECRET);
 
   const response = await fetch(`${BINANCE_API_URL}/sapi/v1/capital/withdraw/apply?${queryString}&signature=${signature}`, {
     method: "POST",
     headers: {
-      "X-MBX-APIKEY": BINANCE_API_KEY,
+      "X-MBX-APIKEY": config.BINANCE_API_KEY,
     },
   });
 
