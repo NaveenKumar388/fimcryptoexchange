@@ -1,4 +1,7 @@
-export interface UserState {
+import { Context as GrammyContext, SessionFlavor } from "grammy";
+import { ConversationFlavor } from "@grammyjs/conversations";
+
+export interface SessionData {
   step: string;
   name: string;
   telegramUsername: string;
@@ -10,6 +13,8 @@ export interface UserState {
   memo: string;
   transactionId: string;
 }
+
+export type Context = GrammyContext & SessionFlavor<SessionData> & ConversationFlavor;
 
 export enum BotCommand {
   START = "start",
