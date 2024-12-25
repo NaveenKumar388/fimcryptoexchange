@@ -1,13 +1,8 @@
-import { Context } from "grammy";
-import { createClient } from "@supabase/supabase-js";
-import { ADMIN_PASSWORD, AVAILABLE_CURRENCIES, NETWORK_FEES, FIXED_DOLLAR_VALUE, ENHANCE_FEE_PER_DOLLAR, USDT_FIXED_DOLLAR_VALUE } from "./constants";
-import { getBinanceTicker, createBinanceWithdrawal } from "@/lib/binanceApi";
-import type { UserState } from "@/lib/types";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || "",
-  process.env.SUPABASE_KEY || ""
-);
+import { Context, Conversation } from "grammy";
+import { ADMIN_PASSWORD, AVAILABLE_CURRENCIES, NETWORK_FEES, FIXED_DOLLAR_VALUE, ENHANCE_FEE_PER_DOLLAR, USDT_FIXED_DOLLAR_VALUE } from "../constants";
+import { getBinanceTicker, createBinanceWithdrawal } from "./binanceApi";
+import { storeUserData, storeTransactionData, updateTransactionStatus } from "./database";
+import type { UserState } from "../types";
 
 export async function handleStart(ctx: Context) {
   await ctx.reply("Welcome to FIM Crypto Exchange! Use /register to start the registration process.");
@@ -23,7 +18,7 @@ export async function handleHelp(ctx: Context) {
   );
 }
 
-export async function handleRegister(conversation: any, ctx: Context) {
+export async function handleRegister(conversation: Conversation<Context>, ctx: Context) {
   await ctx.reply("Welcome to FIM Crypto Exchange! Please provide your name:");
   const { message } = await conversation.wait();
   ctx.session.name = message?.text || "";
@@ -40,7 +35,7 @@ export async function handleRegister(conversation: any, ctx: Context) {
   await ctx.reply("Gmail address saved! Registration complete. Use /exchange to start a new exchange.");
 }
 
-export async function handleExchange(conversation: any, ctx: Context) {
+export async function handleExchange(conversation: Conversation<Context>, ctx: Context) {
   await ctx.reply("Choose your crypto currency:", {
     reply_markup: {
       keyboard: AVAILABLE_CURRENCIES.map(currency => [currency]),
@@ -146,7 +141,7 @@ Transaction ID: ${ctx.session.transactionId}
   }
 }
 
-export async function handleAdmin(conversation: any, ctx: Context) {
+export async function handleAdmin(conversation: Conversation<Context>, ctx: Context) {
   await ctx.reply("Enter admin password:");
   const { message: passwordMessage } = await conversation.wait();
 
@@ -191,53 +186,18 @@ export async function handleAdmin(conversation: any, ctx: Context) {
   await ctx.reply("Thank you for using the admin panel.");
 }
 
-async function storeUserData(ctx: Context) {
-  const { error } = await supabase
-    .from('users')
-    .upsert({
-      telegram_id: ctx.from?.id,
-      name: ctx.session.name,
-      telegram_username: ctx.session.telegramUsername,
-      gmail_address: ctx.session.gmailAddress,
-    });
+```typescript file="src/config.ts"
+import dotenv from 'dotenv';
 
-  if (error) {
-    console.error("Error storing user data:", error);
-  }
-}
+dotenv.config();
 
-async function storeTransactionData(ctx: Context) {
-  const { error } = await supabase
-    .from('transactions')
-    .insert({
-      user_id: ctx.from?.id,
-      currency: ctx.session.selectedCurrency,
-      network: ctx.session.selectedNetwork,
-      amount_usd: ctx.session.amount,
-      amount_crypto: ctx.session.amount / parseFloat((await getBinanceTicker(`${ctx.session.selectedCurrency}USDT`)).price),
-      wallet_address: ctx.session.walletAddress,
-      memo: ctx.session.memo,
-      transaction_id: ctx.session.transactionId,
-      status: 'pending',
-    });
-
-  if (error) {
-    console.error("Error storing transaction data:", error);
-  }
-}
-
-async function updateTransactionStatus(ctx: Context, status: string, hash?: string, error?: string) {
-  const { error: updateError } = await supabase
-    .from('transactions')
-    .update({
-      status,
-      transaction_hash: hash,
-      error_message: error,
-    })
-    .eq('transaction_id', ctx.session.transactionId);
-
-  if (updateError) {
-    console.error("Error updating transaction status:", updateError);
-  }
-}
+export const config = {
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
+  SUPABASE_URL: process.env.SUPABASE_URL || '',
+  SUPABASE_KEY: process.env.SUPABASE_KEY || '',
+  BINANCE_API_KEY: process.env.BINANCE_API_KEY || '',
+  BINANCE_API_SECRET: process.env.BINANCE_API_SECRET || '',
+  DATABASE_URL: process.env.DATABASE_URL || '',
+  REDIS_URL: process.env.REDIS_URL || '',
+};
 
