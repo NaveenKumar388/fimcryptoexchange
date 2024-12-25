@@ -45,7 +45,8 @@ export async function POST(req: Request) {
   try {
     await handler(req);
     return new Response("OK", { status: 200 });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error in webhook:", error);
     return new Response("Internal server error", { status: 500 });
   }
