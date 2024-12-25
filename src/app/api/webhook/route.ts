@@ -1,7 +1,7 @@
 import { Bot, webhookCallback } from "grammy";
 import { conversations } from "@grammyjs/conversations";
-import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from "src/lib/commands";
-import type { UserState } from "src/lib/types";
+import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from "../../../lib/commands";
+import type { UserState } from "@/lib/types";
 
 const bot = new Bot<UserState>(process.env.TELEGRAM_BOT_TOKEN || "");
 
