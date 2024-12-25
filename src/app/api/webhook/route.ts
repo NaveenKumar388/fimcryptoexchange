@@ -41,12 +41,24 @@ bot.catch((err) => {
 // Create the handler
 const handler = webhookCallback(bot, "next-js");
 
-export async function POST(req: Request) {
+export async function POST(req: Request, res: Response) {
   try {
-    await handler(req);
+    // Convert Request to NodeJS.IncomingMessage
+    const nodeRequest = {
+      method: req.method,
+      headers: Object.fromEntries(req.headers.entries()),
+      body: await req.text(),
+    };
+
+    // Create a mock response object
+    const nodeResponse = {
+      setHeader: () => {},
+      end: () => {},
+    };
+
+    await handler(nodeRequest as any, nodeResponse as any);
     return new Response("OK", { status: 200 });
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error in webhook:", error);
     return new Response("Internal server error", { status: 500 });
   }
