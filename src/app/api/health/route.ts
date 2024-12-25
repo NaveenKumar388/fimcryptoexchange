@@ -1,4 +1,4 @@
-import { testConnections } from '../../../lib/db';
+import { testConnections } from '../../../lib/database';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -9,8 +9,7 @@ export async function GET() {
       status: dbConnected ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),
       databases: {
-        postgres: dbConnected,
-        redis: dbConnected
+        supabase: dbConnected,
       }
     });
   } catch (error) {
