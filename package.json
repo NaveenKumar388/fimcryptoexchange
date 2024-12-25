@@ -3,40 +3,28 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "NODE_ENV=production next build",
-    "start": "next start",
-    "lint": "next lint",
-    "postinstall": "npm run build",
-    "start:node": "node dist/server.node.js",
-    "start:bun": "bun run src/server.bun.ts",
-    "build:node": "tsc -p tsconfig.server.json"
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "@grammyjs/conversations": "^1.1.2",
     "@supabase/supabase-js": "^2.21.0",
-    "express": "^4.18.2",
+    "dotenv": "^16.0.3",
     "grammy": "^1.16.1",
     "ioredis": "^5.3.2",
-    "next": "13.4.4",
-    "pg": "^8.11.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "pg": "^8.11.3"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "20.2.5",
+    "@types/node": "^20.2.5",
     "@types/pg": "^8.10.9",
-    "@types/react": "18.2.7",
-    "@types/react-dom": "18.2.4",
-    "autoprefixer": "10.4.14",
-    "bun-types": "^1.0.7",
-    "elysia": "^0.7.30",
-    "eslint": "8.41.0",
-    "eslint-config-next": "13.4.4",
-    "postcss": "8.4.24",
-    "tailwindcss": "3.3.2",
-    "typescript": "5.0.4"
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "^8.41.0",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   }
 }
 
