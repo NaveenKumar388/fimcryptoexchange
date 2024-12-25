@@ -1,11 +1,11 @@
-import { Context } from "grammy";
+import { Context, SessionFlavor } from "grammy";
 import { Conversation, ConversationFlavor } from "@grammyjs/conversations";
 import { ADMIN_PASSWORD, AVAILABLE_CURRENCIES, NETWORK_FEES, FIXED_DOLLAR_VALUE, ENHANCE_FEE_PER_DOLLAR, USDT_FIXED_DOLLAR_VALUE } from "../constants";
 import { getBinanceTicker, createBinanceWithdrawal } from "./binanceApi";
 import { storeUserData, storeTransactionData, updateTransactionStatus } from "./database";
 import type { SessionData } from "../types";
 
-type MyContext = Context & ConversationFlavor & { session: SessionData };
+type MyContext = Context & ConversationFlavor & SessionFlavor<SessionData>;
 type MyConversation = Conversation<MyContext>;
 
 export async function handleStart(ctx: MyContext) {
