@@ -1,12 +1,26 @@
 import { Bot, session } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from "./lib/commands";
-import { UserState } from "./types";
+import { Context, SessionData } from "./types";
 import { config } from "./config";
 
-const bot = new Bot<UserState>(config.TELEGRAM_BOT_TOKEN);
+const bot = new Bot<Context>(config.TELEGRAM_BOT_TOKEN);
 
-bot.use(session({ initial: () => ({} as UserState) }));
+bot.use(session({
+  initial: (): SessionData => ({
+    step: "",
+    name: "",
+    telegramUsername: "",
+    gmailAddress: "",
+    selectedCurrency: "",
+    selectedNetwork: "",
+    amount: 0,
+    walletAddress: "",
+    memo: "",
+    transactionId: ""
+  })
+}));
+
 bot.use(conversations());
 
 bot.use(createConversation(handleRegister));
