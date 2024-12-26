@@ -7,6 +7,8 @@ export const config = {
   RENDER_EXTERNAL_HOSTNAME: process.env.RENDER_EXTERNAL_HOSTNAME || '',
   BINANCE_API_KEY: process.env.BINANCE_API_KEY || '',
   BINANCE_API_SECRET: process.env.BINANCE_API_SECRET || '',
+  SUPABASE_URL: process.env.SUPABASE_URL || '',
+  SUPABASE_KEY: process.env.SUPABASE_KEY || '',
 };
 
 if (!config.TELEGRAM_BOT_TOKEN) {
@@ -27,5 +29,13 @@ if (!config.BINANCE_API_KEY) {
 
 if (!config.BINANCE_API_SECRET) {
   throw new Error('BINANCE_API_SECRET is not set');
+}
+
+if (!config.SUPABASE_URL) {
+  throw new Error('SUPABASE_URL is not set');
+}
+
+if (!config.SUPABASE_KEY) {
+  throw new Error('SUPABASE_KEY is not set');
 }
 
