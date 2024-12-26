@@ -1,26 +1,10 @@
-import type { Pool } from 'pg';
+import { Pool } from 'pg';
 import { Redis } from 'ioredis';
 
-// Parse Redis URL (Render provides a full URL)
-function parseRedisUrl(url: string) {
-  const parsedUrl = new URL(url);
-  return {
-    host: parsedUrl.hostname,
-    port: Number(parsedUrl.port),
-    username: parsedUrl.username,
-    password: parsedUrl.password,
-    tls: {
-      rejectUnauthorized: false // Required for Render Redis
-    }
-  };
-}
-
 // PostgreSQL configuration
-export const pgPool: Pool = new (require('pg').Pool)({
+export const pgPool = new Pool({
   connectionString: process.env.INTERNAL_POSTGRES_URL || process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false // Required for Render PostgreSQL
-  }
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
 });
 
 // Redis configuration
@@ -50,42 +34,73 @@ export async function testConnections() {
 export async function initializeDatabase() {
   const client = await pgPool.connect();
   try {
-    // Create users table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        telegram_id BIGINT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        telegram_username VARCHAR(255),
-        gmail_address VARCHAR(255),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    // Start a transaction
+    await client.query('BEGIN');
+
+    // Check if the users table exists
+    const userTableCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_name = 'users'
       );
     `);
 
-    // Create transactions table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS transactions (
-        id SERIAL PRIMARY KEY,
-        user_id BIGINT REFERENCES users(telegram_id),
-        currency VARCHAR(10) NOT NULL,
-        network VARCHAR(50) NOT NULL,
-        amount_usd DECIMAL(15,2) NOT NULL,
-        amount_crypto DECIMAL(30,8) NOT NULL,
-        wallet_address TEXT NOT NULL,
-        memo TEXT,
-        transaction_id VARCHAR(255) UNIQUE NOT NULL,
-        status VARCHAR(20) DEFAULT 'pending',
-        transaction_hash VARCHAR(255),
-        error_message TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      );
+    if (!userTableCheck.rows[0].exists) {
+      console.log('Creating users table...');
+      // Create users table
+      await client.query(`
+        CREATE TABLE users (
+          telegram_id BIGINT PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          telegram_username VARCHAR(255),
+          gmail_address VARCHAR(255),
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+    }
 
-      CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
-      CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);
+    // Check if the transactions table exists
+    const transactionTableCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_name = 'transactions'
+      );
     `);
+
+    if (!transactionTableCheck.rows[0].exists) {
+      console.log('Creating transactions table...');
+      // Create transactions table
+      await client.query(`
+        CREATE TABLE transactions (
+          id SERIAL PRIMARY KEY,
+          user_id BIGINT REFERENCES users(telegram_id),
+          currency VARCHAR(10) NOT NULL,
+          network VARCHAR(50) NOT NULL,
+          amount_usd DECIMAL(15,2) NOT NULL,
+          amount_crypto DECIMAL(30,8) NOT NULL,
+          wallet_address TEXT NOT NULL,
+          memo TEXT,
+          transaction_id VARCHAR(255) UNIQUE NOT NULL,
+          status VARCHAR(20) DEFAULT 'pending',
+          transaction_hash VARCHAR(255),
+          error_message TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
+        CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);
+      `);
+    }
+
+    // Commit the transaction
+    await client.query('COMMIT');
 
     console.log('Database tables initialized successfully');
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('Error initializing database:', error);
     throw error;
   } finally {
