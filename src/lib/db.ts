@@ -1,14 +1,15 @@
 import { Pool } from 'pg';
 import { Redis } from 'ioredis';
+import { config } from '../config';
 
 // PostgreSQL configuration
 export const pgPool = new Pool({
-  connectionString: process.env.INTERNAL_POSTGRES_URL || process.env.POSTGRES_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
+  connectionString: config.DATABASE_URL,
+  ssl: config.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
 });
 
 // Redis configuration
-export const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+export const redis = new Redis(config.REDIS_URL);
 
 // Test database connections
 export async function testConnections() {
