@@ -6,6 +6,7 @@ import { testConnections, initializeDatabase } from './lib/db';
 import type { Context } from './types';
 import { session } from 'grammy';
 import type { SessionData } from './types';
+import { config } from './config';
 
 async function startServer() {
   try {
@@ -19,7 +20,7 @@ async function startServer() {
     // Initialize database tables
     await initializeDatabase();
 
-    const bot = new Bot<Context>(process.env.TELEGRAM_BOT_TOKEN || '');
+    const bot = new Bot<Context>(config.TELEGRAM_BOT_TOKEN);
 
     // Configure bot
     bot.use(session({
@@ -89,13 +90,13 @@ async function startServer() {
       });
     });
 
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
+    const port = parseInt(config.PORT, 10);
+    app.listen(port, '0.0.0.0', () => {
       console.log(`Server is running on port ${port}`);
     });
 
     console.log('Bot username:', bot.botInfo.username);
-    console.log('Webhook URL:', `https://your-domain.com/webhook`);
+    console.log('Webhook URL:', `https://${process.env.RENDER_EXTERNAL_HOSTNAME}/webhook`);
 
   } catch (error) {
     console.error('Error starting server:', error);
