@@ -9,12 +9,17 @@ import type { SessionData } from './types';
 import { config } from './config';
 
 async function startServer() {
+  console.log('Starting server...');
+  console.log('Environment:', config.NODE_ENV);
+  console.log('Port:', config.PORT);
+  console.log('Database URL:', config.DATABASE_URL);
+  console.log('Redis URL:', config.REDIS_URL);
+
   try {
     // Test database connections
     const connected = await testConnections();
     if (!connected) {
-      console.error('Failed to connect to databases');
-      process.exit(1);
+      throw new Error('Failed to connect to databases');
     }
 
     // Initialize database tables
@@ -79,7 +84,10 @@ async function startServer() {
     app.use(express.json());
 
     // Webhook handler
-    app.use('/webhook', webhookCallback(bot, 'express'));
+    app.use('/webhook', (req, res, next) => {
+      console.log('Received webhook request:', req.body);
+      webhookCallback(bot, 'express')(req, res, next);
+    });
 
     // Health check endpoint
     app.get('/health', async (_, res) => {
@@ -90,13 +98,15 @@ async function startServer() {
       });
     });
 
+    console.log('Setting up Express server...');
     const port = parseInt(config.PORT, 10);
     app.listen(port, '0.0.0.0', () => {
       console.log(`Server is running on port ${port}`);
+      console.log('Express server setup complete');
     });
 
     console.log('Bot username:', bot.botInfo.username);
-    console.log('Webhook URL:', `https://${process.env.RENDER_EXTERNAL_HOSTNAME}/webhook`);
+    console.log('Webhook URL:', `https://${config.RENDER_EXTERNAL_HOSTNAME}/webhook`);
 
   } catch (error) {
     console.error('Error starting server:', error);
