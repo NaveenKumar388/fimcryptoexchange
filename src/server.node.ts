@@ -78,10 +78,7 @@ async function startServer() {
     app.use(express.json());
 
     // Webhook handler
-    app.post('/webhook', (req, res, next) => {
-      console.log('Received webhook request:', req.body);
-      webhookCallback(bot, 'express')(req, res, next);
-    });
+    app.use('/webhook', webhookCallback(bot, 'express'));
 
     // Health check endpoint
     app.get('/health', async (_, res) => {
