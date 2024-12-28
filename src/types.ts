@@ -17,3 +17,8 @@ export interface SessionData {
 
 export type MyContext = Context & SessionFlavor<SessionData> & ConversationFlavor;
 
+// Add this line to extend ConversationSessionData
+declare module "@grammyjs/conversations" {
+  interface ConversationSessionData extends SessionData {}
+}
+
