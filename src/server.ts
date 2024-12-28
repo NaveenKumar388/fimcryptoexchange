@@ -4,7 +4,7 @@ import bot from './bot';
 import { config } from './config';
 import { testDatabaseConnections } from './database';
 
-async function startServer() {
+async function startServer() {  
   console.log('Starting server...');
   console.log('Environment:', config.NODE_ENV);
   console.log('Port:', config.PORT);
