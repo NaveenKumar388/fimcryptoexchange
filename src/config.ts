@@ -1,41 +1,22 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 export const config = {
-  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
-  DATABASE_URL: process.env.DATABASE_URL || '',
-  REDIS_URL: process.env.REDIS_URL || '',
-  PORT: process.env.PORT || '3000',
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  RENDER_EXTERNAL_HOSTNAME: process.env.RENDER_EXTERNAL_HOSTNAME || '',
-  BINANCE_API_KEY: process.env.BINANCE_API_KEY || '',
-  BINANCE_API_SECRET: process.env.BINANCE_API_SECRET || '',
-  SUPABASE_URL: process.env.SUPABASE_URL || '',
-  SUPABASE_KEY: process.env.SUPABASE_KEY || '',
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN!,
+  POSTGRESQL_URL: process.env.POSTGRESQL_URL || "postgresql://fimcryptoexchange_db_user:a2tIWTfXciF6YshefoEttQ29VmV1fpJW@dpg-ctltnpaj1k6c73d2pbtg-a/fimcryptoexchange_db",
+  REDIS_URL: process.env.REDIS_URL || "redis://red-ctltmrogph6c739msvag:6379",
+  SUPABASE_URL: process.env.SUPABASE_URL!,
+  SUPABASE_KEY: process.env.SUPABASE_KEY!,
+  PORT: process.env.PORT || "3000",
+  NODE_ENV: process.env.NODE_ENV || "development",
+  BINANCE_API_KEY: process.env.BINANCE_API_KEY!,
+  BINANCE_API_SECRET: process.env.BINANCE_API_SECRET!,
 };
 
-if (!config.TELEGRAM_BOT_TOKEN) {
-  throw new Error('TELEGRAM_BOT_TOKEN is not set');
-}
-
-if (!config.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set');
-}
-
-if (!config.REDIS_URL) {
-  throw new Error('REDIS_URL is not set');
-}
-
-if (!config.BINANCE_API_KEY) {
-  throw new Error('BINANCE_API_KEY is not set');
-}
-
-if (!config.BINANCE_API_SECRET) {
-  throw new Error('BINANCE_API_SECRET is not set');
-}
-
-if (!config.SUPABASE_URL) {
-  throw new Error('SUPABASE_URL is not set');
-}
-
-if (!config.SUPABASE_KEY) {
-  throw new Error('SUPABASE_KEY is not set');
-}
+Object.entries(config).forEach(([key, value]) => {
+  if (value === undefined) {
+    throw new Error(`Environment variable ${key} is not set`);
+  }
+});
 
