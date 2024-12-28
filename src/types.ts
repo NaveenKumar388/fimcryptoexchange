@@ -12,6 +12,7 @@ export interface SessionData {
   walletAddress: string;
   memo: string;
   transactionId: string;
+  __language_code: string;
 }
 
 export type MyContext = Context & SessionFlavor<SessionData> & ConversationFlavor;
