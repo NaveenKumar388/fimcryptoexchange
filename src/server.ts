@@ -23,7 +23,7 @@ async function startServer() {
     app.use('/webhook', webhookCallback(bot, 'express'));
 
     // Health check endpoint
-    app.get('/health', async (_, res) => {
+    app.get('/health', async (_: express.Request, res: express.Response) => {
       const dbConnected = await testDatabaseConnections();
       res.status(dbConnected ? 200 : 500).json({ 
         status: dbConnected ? 'ok' : 'error',
