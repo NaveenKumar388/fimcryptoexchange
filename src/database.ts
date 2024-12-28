@@ -110,3 +110,5 @@ export async function testDatabaseConnections() {
   }
 }
 
+export const testConnections = testDatabaseConnections;
+
