@@ -21,7 +21,8 @@ bot.use(session({
     amount: 0,
     walletAddress: "",
     memo: "",
-    transactionId: ""
+    transactionId: "",
+    __language_code: "en"
   }),
   storage: new RedisAdapter({ instance: redis })
 }));
