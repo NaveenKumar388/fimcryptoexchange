@@ -1,10 +1,14 @@
 import { Bot, session } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
-import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from "./lib/commands";
-import { Context, SessionData } from "./types";
+import { RedisAdapter } from "@grammyjs/storage-redis";
+import Redis from "ioredis";
 import { config } from "./config";
+import { handleStart, handleHelp, handleRegister, handleExchange, handleAdmin } from "./commands";
+import { MyContext, SessionData } from "./types";
 
-const bot = new Bot<Context>(config.TELEGRAM_BOT_TOKEN);
+const redis = new Redis(config.REDIS_URL);
+
+const bot = new Bot<MyContext>(config.TELEGRAM_BOT_TOKEN);
 
 bot.use(session({
   initial: (): SessionData => ({
@@ -18,7 +22,8 @@ bot.use(session({
     walletAddress: "",
     memo: "",
     transactionId: ""
-  })
+  }),
+  storage: new RedisAdapter({ instance: redis })
 }));
 
 bot.use(conversations());
@@ -33,15 +38,7 @@ bot.command("register", (ctx) => ctx.conversation.enter("handleRegister"));
 bot.command("exchange", (ctx) => ctx.conversation.enter("handleExchange"));
 bot.command("admin", (ctx) => ctx.conversation.enter("handleAdmin"));
 
-bot.catch((err) => {
-  console.error("Error in bot:", err);
-});
+bot.on("message", (ctx) => ctx.reply("I don't understand that command."));
 
-export function startBot() {
-  bot.start({
-    onStart: (botInfo) => {
-      console.log(`Bot ${botInfo.username} started`);
-    },
-  });
-}
+export default bot;
 
