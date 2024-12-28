@@ -41,7 +41,7 @@ export async function handleExchange(conversation: Conversation<MyContext>, ctx:
     },
   });
 
-  ctx.session.selectedCurrency = await conversation.form.select(AVAILABLE_CURRENCIES);
+  ctx.session.selectedCurrency = await conversation.form.select(AVAILABLE_CURRENCIES as unknown as string[]);
 
   const networkInfo = NETWORK_FEES[ctx.session.selectedCurrency as keyof typeof NETWORK_FEES];
   ctx.session.selectedNetwork = networkInfo.network;
